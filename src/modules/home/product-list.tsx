@@ -17,7 +17,8 @@ export default function ProductList({
     const translation = product.commerceProductsLocalizations?.[0]
 
     // Get the first price
-    const price = product.commerceProductsPrices?.[0]
+    const price = product.commerceProductsPrices?.find(
+      (price) => price.type === 'retail' )
 
     // Get all images
     const images = product.relationshipsImageToCommerceProducts
@@ -50,6 +51,5 @@ export default function ProductList({
           </li>
         ))}
       </ul>
-   
   )
 }

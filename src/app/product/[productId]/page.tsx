@@ -1,5 +1,5 @@
 import { getProductById } from '@/lib/api'
-import ProductImages from '@/modules/product-view/product-images'
+import ProductView from '@/modules/product-view'
 
 export default async function ProductPage({
   params,
@@ -24,6 +24,7 @@ export default async function ProductPage({
     (price) => price.type === 'retail'
   )
   const price = retailPrice ? retailPrice.value : 0
+  console.log('price', product)
   const currency = retailPrice?.coreCurrency?.symbol || '€'
 
   // Get product attributes (like size)
@@ -72,7 +73,8 @@ export default async function ProductPage({
 
   return (
     <div className='max-w-[2560px] py-8 mx-auto'>
-      <ProductImages
+      <ProductView
+        id={productId}
         images={images}
         productName={productInfo?.name || 'Product'}
         productDetails={productDetails}

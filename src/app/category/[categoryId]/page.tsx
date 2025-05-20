@@ -27,7 +27,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   // Get category details
   const category = await getCategoryById(categoryId)
-  console.log('catz', category?.data)
 
   // If category doesn't exist, we could handle this better
   if (!category || !category.data) {

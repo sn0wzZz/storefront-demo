@@ -1,6 +1,6 @@
 'use client'
+import React, { useState } from 'react'
 import Link from 'next/link'
-import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { CategoriesResponse } from '@/types/categoires'
 
@@ -65,6 +65,7 @@ export default function Categories({
 
             {/* Dropdown for subcategories */}
             {hasSubcategories &&
+              hoveredCategory &&
               hoveredCategory === category.commerceCategory.id && (
                 <div className='absolute top-full left-0 mt-1 bg-white shadow-md rounded-md py-2 min-w-[150px] z-50'>
                   {subcategories.map((subCategory) => (

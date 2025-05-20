@@ -9,6 +9,7 @@ import { Card, CardFooter } from '@/components/ui/card'
 import { BadgePercent, Plus, Bookmark } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import { useCart } from '@/providers/cart.provider'
 
 interface ProductCardProps {
   product: {
@@ -18,16 +19,16 @@ interface ProductCardProps {
     discount?: number
     images: string[]
   }
-  onAddToCart?: (product: unknown, size: string) => void
 }
 
-export function ProductCard({ product, onAddToCart }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [showSizePanel, setShowSizePanel] = useState(false)
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const { addItemToCart } = useCart()
 
   // Available sizes
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
@@ -57,12 +58,15 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     }
   }, [showSizePanel])
 
+
   const handleAddToCart = () => {
-    if (onAddToCart && selectedSize) {
-      onAddToCart(product, selectedSize)
-      setShowSizePanel(false)
-      setSelectedSize(null)
-    }
+    addItemToCart({
+      productId: product.id,
+      quantity: 1,
+      price: product.price,
+      name: product.name,
+      image: product.images[0],
+    })
   }
 
   const toggleSizePanel = () => {
@@ -80,7 +84,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
       : ['/home/item.png']
 
   return (
-    <Card className='overflow-hidden h-full max-h-[480px]  flex flex-col relative gap-0'>
+    <Card className='overflow-hidden   flex flex-col relative gap-0'>
       <div className='relative bg-muted z-10'>
         <AspectRatio ratio={3 / 3}>
           <Image
@@ -183,34 +187,37 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
                   disabled={!selectedSize}
                 >
                   <Plus className='h-6 w-6' />
-                  Add to Cart
+                  ADD TO CART
                 </Button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-        <CardFooter className='flex justify-center items-center p-4 !mt-0 !z-20 bg-background '>
-      <Link href={`/product/${product.id}`} className='absoulute inset-0 w-full'>
+      <CardFooter className='flex justify-center items-center p-4 !mt-0 !z-20 bg-background '>
+        <Link
+          href={`/product/${product.id}`}
+          className='absoulute inset-0 w-full'
+        >
           <div className='flex items-center gap-2 justify-center  flex-col'>
             <p className='body-18-regular'>{product.name}</p>
             {discountedPrice ? (
               <div className='flex items-center gap-1'>
                 <p className='font-semibold text-lg'>
-                  ${discountedPrice.toFixed(2)}
+                  €{discountedPrice.toFixed(2)}
                 </p>
                 <p className='text-sm text-destructive line-through'>
-                  ${product.price.toFixed(2)}
+                  €{product.price.toFixed(2)}
                 </p>
               </div>
             ) : (
               <p className='font-semibold text-lg'>
-                ${product.price.toFixed(2)}
+                €{product.price.toFixed(2)}
               </p>
             )}
           </div>
-      </Link>
-        </CardFooter>
+        </Link>
+      </CardFooter>
     </Card>
   )
 }

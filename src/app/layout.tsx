@@ -1,7 +1,9 @@
+import Navigation from '@/components/navigation'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import Navigation from '@/components/navigation'
+
+import { TriganiCartProvider } from '@/providers/trigani-cart-provider'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -25,15 +27,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Navigation />
-        <main className='my-8'>
-          
-        {children}
-        </main>
-      </body>
+      <TriganiCartProvider>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <Navigation />
+          <main className='my-8'>{children}</main>
+        </body>
+      </TriganiCartProvider>
     </html>
   )
 }

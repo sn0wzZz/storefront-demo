@@ -98,6 +98,16 @@ export interface ProductInventory extends BaseEntity {
   }
 }
 
+// Currency type
+export interface Currency extends BaseEntity {
+  code: string
+  number: string
+  decimalDigits: number
+  name: string
+  symbol?: string
+  keywords?: string
+}
+
 // Product price
 export interface ProductPrice extends BaseEntity {
   productId: string
@@ -105,25 +115,28 @@ export interface ProductPrice extends BaseEntity {
   discount?: number
   currencyId: string
   createdById: string
-  type: string
-  coreCurrency: {
-    id: string
-    createdAt: string
-    updatedAt: string
-    code: string
-    symbol: string
-    name: string
-  }
+  type: 'retail' | 'notax' | 'delivery'
+  coreCurrency: Currency
 }
 
-// Product localization (previously translation)
+// Product localization
 export interface ProductLocalization extends BaseEntity {
   productId: string
   languageId: string
   storeId: string
   slug: string
   name: string
-  description: string
+  description?: string
+    | {
+        root: {
+          children: unknown[]
+          direction: string | null
+          format: string
+          indent: number
+          type: string
+          version: number
+        }
+      }
   commerceLanguage: {
     id: string
     createdAt: string
@@ -140,12 +153,34 @@ export interface ProductToCategory extends BaseEntity {
     id: string
     createdAt: string
     updatedAt: string
-    name: string
-    slug: string
+    name?: string
+    slug?: string
     description?: string
     parentId?: string
     storeId: string
+    createdById?: string
   }
+}
+
+// Product option relationship
+export interface ProductToOption extends BaseEntity {
+  optionId: string
+  productId: string
+}
+
+// Product group type
+export interface CommerceProductGroup extends BaseEntity {
+  type: string
+  storeId: string
+}
+
+// Product group relationship
+export interface ProductToGroup extends BaseEntity {
+  groupId: string
+  productId: string
+  isMain: boolean
+  index: number
+  commerceProductGroup?: CommerceProductGroup
 }
 
 // Store information
@@ -161,7 +196,7 @@ export interface Product extends BaseEntity {
   folio: number
   storeId: string
   sku: string | null
-  type: string
+  type: 'simple' | 'configurable' | 'bundle' | 'virtual'
   commerceProductsAttributesValues: ProductAttributeValue[]
   relationshipsImageToCommerceProducts: ProductImage[]
   commerceProductsInventories: ProductInventory[]
@@ -169,7 +204,18 @@ export interface Product extends BaseEntity {
   commerceProductsLocalizations: ProductLocalization[]
   commerceProductToCategories: ProductToCategory[]
   commerceTaxesToProducts: unknown[] // Add proper type if needed
+  commerceProductToOptions: ProductToOption[]
+  commerceProductToGroups: ProductToGroup[]
   commerceStore: CommerceStore
+}
+
+// Group product item type
+export interface GroupProductItem extends BaseEntity {
+  groupId: string
+  productId: string
+  isMain: boolean
+  index: number
+  product?: Product
 }
 
 // API Response types
@@ -185,7 +231,13 @@ export interface ProductResponse {
   error: null | string
 }
 
-// Category response type (based on the first response you showed)
+export interface ProductGroupResponse {
+  success: boolean
+  data: GroupProductItem[]
+  error: null | string
+}
+
+// Category response type
 export interface CategoryResponse {
   success: boolean
   data: {
@@ -205,15 +257,76 @@ export interface CategoryResponse {
   error: null | string
 }
 
-// API Response type
-export interface ProductsResponse {
-  success: boolean
-  data: Product[]
-  error: null | string
+// Helper function to get product name in preferred language
+export function getProductName(
+  product: Product,
+  languageCode: string = 'en'
+): string {
+  const localization = product.commerceProductsLocalizations.find(
+    (loc) => loc.commerceLanguage.code === languageCode
+  )
+
+  if (localization && localization.name) {
+    return localization.name
+  }
+
+  // Fallback to any available localization
+  const anyLocalization = product.commerceProductsLocalizations.find(
+    (loc) => loc.name
+  )
+  if (anyLocalization) {
+    return anyLocalization.name
+  }
+
+  return 'Unnamed Product'
 }
 
-export interface ProductResponse {
-  success: boolean
-  data: Product
-  error: null | string
+// Helper function to get product price in preferred currency
+export function getProductPrice(
+  product: Product,
+  currencyCode: string = 'EUR',
+  priceType: 'retail' | 'notax' | 'delivery' = 'retail'
+): number {
+  const price = product.commerceProductsPrices.find(
+    (price) =>
+      price.coreCurrency.code === currencyCode && price.type === priceType
+  )
+
+  if (price) {
+    return price.value
+  }
+
+  // Fallback to any price of the requested type
+  const anyPrice = product.commerceProductsPrices.find(
+    (price) => price.type === priceType
+  )
+  if (anyPrice) {
+    return anyPrice.value
+  }
+
+  return 0
+}
+
+// Helper function to check if product is configurable
+export function isConfigurableProduct(product: Product): boolean {
+  return product.type === 'configurable'
+}
+
+// Helper function to get product group ID for configurable products
+export function getProductGroupId(product: Product): string | null {
+  if (!isConfigurableProduct(product)) return null
+
+  const mainGroup = product.commerceProductToGroups.find(
+    (group) => group.isMain
+  )
+  return mainGroup?.groupId || null
+}
+
+// Helper function to filter out main product from group items
+export function filterGroupProducts(
+  groupItems: GroupProductItem[]
+): GroupProductItem[] {
+  return groupItems
+    .filter((item) => !item.isMain)
+    .sort((a, b) => a.index - b.index)
 }

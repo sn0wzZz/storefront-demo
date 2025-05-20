@@ -1,14 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { ShoppingBag, Search, Menu } from 'lucide-react'
+import { useCart } from '@/providers/cart.provider'
+import { CurrencySelector } from './currency-selector'
+import { CoreCurrency } from '@/types/store'
 
-export default function HeaderActions() {
+export default function HeaderActions({
+  currencies,
+}: {
+  currencies: CoreCurrency[] | undefined
+}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { cart } = useCart()
 
   return (
     <div className='flex items-center space-x-4'>
+      <Suspense fallback={<div>Loading...</div>}>
+        <CurrencySelector currencies={currencies} />
+      </Suspense>
       <button
         className='p-2 hover:bg-gray-100 rounded-full'
         aria-label='Search'
@@ -23,7 +34,7 @@ export default function HeaderActions() {
       >
         <ShoppingBag className='h-5 w-5' />
         <span className='absolute top-0 right-0 bg-primary text-white text-xs rounded-full h-4 w-4 flex items-center justify-center'>
-          0
+          {cart?.items.length || 0}
         </span>
       </Link>
 
