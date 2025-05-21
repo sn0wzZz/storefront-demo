@@ -5,6 +5,7 @@ import { CartProvider } from './cart.provider'
 import { ReactNode } from 'react'
 import { z } from 'zod'
 import { CookiesProvider } from 'react-cookie'
+import { CheckoutProvider } from './checkout.provider'
 
 // Define config schema with Zod
 export const configSchema = z.object({
@@ -48,7 +49,9 @@ export function TriganiCartProvider({ children }: TriganiCartProviderProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <CookiesProvider>
-        <CartProvider config={defaultConfig}>{children}</CartProvider>
+        <CartProvider config={defaultConfig}>
+          <CheckoutProvider>{children}</CheckoutProvider>
+        </CartProvider>
       </CookiesProvider>
     </QueryClientProvider>
   )

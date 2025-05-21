@@ -23,7 +23,7 @@ export default async function Navigation() {
   })
 
   return (
-    <header className='w-full bg-background h-16 fixed top-0 z-[999]'>
+    <header className='w-full bg-background h-16 fixed top-0 z-[999] border-b'>
       <div className='container max-w-[2560px] mx-auto h-full flex items-center justify-between px-4'>
         <CategoriesWrapper categories={categories} />
         <div className='flex items-center'>

@@ -104,7 +104,10 @@ function CartItem({ item, onRemove, onUpdateQuantity }: CartItemProps) {
   return (
     <div className='grid grid-cols-2 md:grid-cols-12 gap-4 items-center py-5 px-5'>
       {/* Image - Column 1 */}
-      <Link href={`/product/${item.productId}`} className=' order-1 md:col-span-6 flex md:order-none gap-3 '>
+      <Link
+        href={`/product/${item.productId}`}
+        className=' order-1 md:col-span-6 flex md:order-none gap-3 '
+      >
         <div className='h-24 w-24 overflow-hidden rounded-md'>
           {item.image ? (
             <div className='relative h-full w-full'>
@@ -138,7 +141,7 @@ function CartItem({ item, onRemove, onUpdateQuantity }: CartItemProps) {
       <div className='order-3 md:col-span-2 space-y-2 md:order-none '>
         <p>Product size</p>
         <Select value={size} onValueChange={handleSizeChange}>
-          <SelectTrigger className='w-[120px]'>
+          <SelectTrigger className='w-[120px] bg-transparent'>
             <SelectValue placeholder='Select size' />
           </SelectTrigger>
           <SelectContent>
@@ -169,7 +172,7 @@ function CartItem({ item, onRemove, onUpdateQuantity }: CartItemProps) {
             min='1'
             value={quantity}
             onChange={handleQuantityChange}
-            className='h-8 w-14 rounded-none text-center border-0 shadow-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+            className='h-8 w-14 rounded-none text-center border-0 shadow-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none bg-transparent'
           />
           <Button
             variant='outline'

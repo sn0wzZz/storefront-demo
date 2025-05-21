@@ -171,7 +171,9 @@ export async function getProducts(): Promise<Product[]> {
  */
 export async function getProductById(productId: string) {
   try {
-    const response = await fetchApi<ProductResponse>(`/catalog/${productId}`)
+    const response = await fetchApi<ProductResponse>(
+      `/catalog/${productId}?formatOptions[richText]=html`
+    )
     return response.data
   } catch (error) {
     console.error(`Error in getProductById for ${productId}:`, error)

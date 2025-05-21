@@ -253,11 +253,16 @@ export default function ProductView({
                 </div>
 
                 {/* Description */}
-                <p className='text-gray-600 text-sm'>
+                {/* <p className='text-gray-600 text-sm'>
                   {typeof productDetails.description === 'string'
                     ? productDetails.description
                     : ''}
                 </p>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: productDetails.description ?? '',
+                  }}
+                /> */}
 
                 {/* Colors - Only show if there are available colors */}
                 {productDetails.availableColors.length > 0 && (
@@ -354,9 +359,14 @@ export default function ProductView({
           </div>
 
           {/* Description */}
-          {typeof productDetails.description === 'string' && (
+          {/* {typeof productDetails.description === 'string' && (
             <p className='text-gray-600'>{productDetails.description}</p>
           )}
+          <div
+            dangerouslySetInnerHTML={{
+              __html: productDetails.description ?? '',
+            }}
+          /> */}
 
           {/* Colors - Only show if there are available colors */}
           {productDetails.availableColors.length > 0 && (

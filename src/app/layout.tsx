@@ -32,7 +32,7 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <Navigation />
-          <main className='my-8'>{children}</main>
+          <main >{children}</main>
         </body>
       </TriganiCartProvider>
     </html>
