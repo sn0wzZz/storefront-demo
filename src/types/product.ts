@@ -257,6 +257,39 @@ export interface CategoryResponse {
   error: null | string
 }
 
+// Add this interface to properly type products with group items
+export interface ProductWithGroupItems extends Product {
+  groupItems?: GroupProductItem[];
+}
+
+// Update the GroupProductItem interface to include the product field
+export interface GroupProductItem extends BaseEntity {
+  type: 'simple' | 'configurable' | 'bundle' | 'virtual',
+  storeId: string
+  commerceProductToGroups: {
+    groupId: string
+    productId: string
+    isMain: boolean
+    index: number
+    product?: Product
+  }[]
+}
+
+// Add a type for variant data that will be passed to the ProductView component
+// Add this at the end of the file
+
+// Interface for variant display in the UI
+export interface ProductVariantDisplay {
+  id: string;
+  size?: string;
+  color?: string;
+  images: MediaFile[];
+  price: number;
+  inventory: number;
+  name: string;
+}
+
+
 // Helper function to get product name in preferred language
 export function getProductName(
   product: Product,

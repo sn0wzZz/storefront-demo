@@ -199,7 +199,7 @@ export default function CartSummary() {
             <div className='flex-shrink-0 py-6 '>
               {activeTab !== 'payment' ? (
                 <Button
-                  className='w-full  text-base font-medium'
+                  className='w-full py-6 text-base font-medium'
                   disabled={!cart || cart.items.length === 0}
                   onClick={() => nextTab()}
                 >
@@ -208,7 +208,7 @@ export default function CartSummary() {
               ) : (
                 <Button
                   onClick={handleSubmit}
-                  className='w-full text-base font-medium'
+                  className='w-full py-6 text-base font-medium'
                   disabled={!cart || cart.items.length === 0 || isSubmitting}
                 >
                   {isSubmitting ? 'Processing...' : 'Place Order'}

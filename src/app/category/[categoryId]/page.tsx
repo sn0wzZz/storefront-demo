@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { getCategoryById, getProductsByCategory } from '@/lib/api'
+import { getCategoryById, getProductsByCategory } from '@/lib/commerce-api'
 import ProductGridSkeleton from '@/modules/home/product-grid-skeleton'
 import ProductList from '@/modules/home/product-list'
 

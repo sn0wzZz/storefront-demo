@@ -6,7 +6,7 @@ export default function page() {
   return (
     <>
       {/* Cart */}
-      <div className='flex items-center justify-between p-4 border-y h-16'>
+      <div className='flex items-center justify-between p-4 border-b h-16'>
         <span className='body-20-medium'>YOUR CART</span>
         <Button variant={'ghost'}>
           <Trash className='h-4 w-4 mr-2' />

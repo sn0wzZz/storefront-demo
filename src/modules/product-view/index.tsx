@@ -1,50 +1,30 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import { Bookmark, Eye, Package2, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/providers/cart.provider'
+import { ProductVariantDisplay } from '@/types/product'
 
 interface MediaFile {
   url: string
 }
 
-interface ProductVariant {
-  id: string
-  price: number
-  inventory: number
-  images: MediaFile[]
-}
-
 interface ProductDetailsProps {
   name: string
-  description?:
-    | string
-    | {
-        root: {
-          children: unknown[]
-          direction: string | null
-          format: string
-          indent: number
-          type: string
-          version: number
-        }
-      }
+  description?: string | object
   price: number
   currency: string
   inventory: number
   availableSizes: string[]
-  availableColors: {
+  availableColors?: {
     name: string
     value: string
     hex: string
     border?: boolean
   }[]
-  categories: unknown[]
-  isConfigurable?: boolean
-  variants?: Record<string, ProductVariant>
 }
 
 interface ProductViewProps {
@@ -52,7 +32,7 @@ interface ProductViewProps {
   images: MediaFile[]
   productName: string
   productDetails: ProductDetailsProps
-  variants?: unknown[]
+  variants?: ProductVariantDisplay[] // Simplified type for variants
 }
 
 export default function ProductView({
@@ -60,104 +40,39 @@ export default function ProductView({
   images,
   productName,
   productDetails,
+  variants
 }: ProductViewProps) {
   const { addItemToCart } = useCart()
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
-  const [selectedColor, setSelectedColor] = useState<string | null>(null)
-  const [currentVariant, setCurrentVariant] = useState<ProductVariant | null>(
-    null
-  )
+
   const [mainImage, setMainImage] = useState<MediaFile>(
-    images[0] || { url: '/item.jpg' }
-  )
-  const [currentImages, setCurrentImages] = useState<MediaFile[]>(images)
-  const [currentPrice, setCurrentPrice] = useState<number>(productDetails.price)
-  const [currentInventory, setCurrentInventory] = useState<number>(
-    productDetails.inventory
+    images[0] || { url: '/home/item.png' }
   )
 
-  // Update the current variant when size or color changes
-  useEffect(() => {
-    if (productDetails.isConfigurable && selectedSize && selectedColor) {
-      const variantKey = `${selectedSize}_${selectedColor}`
-      const variant = productDetails.variants?.[variantKey]
-
-      if (variant) {
-        setCurrentVariant(variant)
-        setCurrentPrice(variant.price)
-        setCurrentInventory(variant.inventory)
-
-        // Update images if the variant has its own images
-        if (variant.images && variant.images.length > 0) {
-          setCurrentImages(variant.images)
-          setMainImage(variant.images[0])
-        } else {
-          // Fallback to main product images
-          setCurrentImages(images)
-          setMainImage(images[0] || { url: '/item.jpg' })
-        }
-      } else {
-        setCurrentVariant(null)
-        setCurrentPrice(productDetails.price)
-        setCurrentInventory(productDetails.inventory)
-        setCurrentImages(images)
-        setMainImage(images[0] || { url: '/item.jpg' })
-      }
-    } else {
-      // Reset to default if no variant is selected
-      setCurrentVariant(null)
-      setCurrentPrice(productDetails.price)
-      setCurrentInventory(productDetails.inventory)
-      setCurrentImages(images)
-      setMainImage(images[0] || { url: '/item.jpg' })
-    }
-  }, [selectedSize, selectedColor, productDetails, images])
+  // Simplified - no need to track current variant, price, inventory separately
+  const isProductAvailable =
+    productDetails.inventory > 0 &&
+    (!productDetails.availableSizes.length || selectedSize)
 
   const handleThumbnailClick = (image: MediaFile) => {
     setMainImage(image)
   }
 
   const handleAddToCart = () => {
-    // If this is a configurable product, add the selected variant to cart
-    if (productDetails.isConfigurable && currentVariant) {
-      addItemToCart({
-        productId: currentVariant.id,
-        quantity: 1,
-        price: currentVariant.price,
-        name: `${productName} - ${selectedSize} ${selectedColor}`,
-        image:
-          currentVariant.images?.[0]?.url ||
-          currentImages[0]?.url ||
-          '/item.jpg',
-        attributes: {
-          size: selectedSize || '',
-          color: selectedColor || '',
-        },
-      })
-    } else {
-      // Otherwise add the main product
-      addItemToCart({
-        productId: id,
-        quantity: 1,
-        price: productDetails.price,
-        name: productName,
-        image: images.at(0)?.url || '/item.jpg',
-        attributes: {
-          size: selectedSize || '',
-          color: selectedColor || '',
-        },
-      })
-    }
+    addItemToCart({
+      productId: id,
+      quantity: 1,
+      price: productDetails.price,
+      name: productName,
+      image: images[0]?.url || '/home/item.png',
+      attributes: {
+        size: selectedSize || '',
+      },
+    })
   }
-
-  // Check if the product is available to add to cart
-  const isProductAvailable = productDetails.isConfigurable
-    ? !!selectedSize && !!selectedColor && currentInventory > 0
-    : currentInventory > 0
 
   return (
     <div className='relative'>
-      {/* Main image with floating details */}
       <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
         {/* Left column - Images */}
         <div className='space-y-4 md:col-span-full'>
@@ -166,17 +81,17 @@ export default function ProductView({
               src={mainImage?.url || '/item.png'}
               alt={productName || 'Product image'}
               fill
-              className='object-contain'
+              className='object-contain max-w-max mx-auto'
             />
 
             {/* Mobile thumbnails - horizontal scroll */}
-            <div className='absolute -bottom-32  left-0 right-0 p-2  md:hidden'>
+            <div className='absolute -bottom-32 left-0 right-0 p-2 md:hidden'>
               <div className='overflow-x-auto'>
-                <div className='flex  py-2'>
-                  {currentImages?.map((image, index) => (
+                <div className='flex py-2'>
+                  {images?.map((image, index) => (
                     <div
                       key={index}
-                      className={`relative w-[100px] h-[100px] border flex-shrink-0 rounded-md overflow-hidden cursor-pointer `}
+                      className={`relative w-[100px] h-[100px] border flex-shrink-0 rounded-md overflow-hidden cursor-pointer`}
                       onClick={() => handleThumbnailClick(image)}
                     >
                       <Image
@@ -200,14 +115,11 @@ export default function ProductView({
 
             {/* Desktop thumbnails - vertical layout */}
             <div className='hidden md:block my-auto absolute left-0 top-0 bottom-0 p-2 m-6 bg-white/90 z-20 max-h-[512px]'>
-              <div className='h-full overflow-y-auto seld-center rtl'>
+              <div className='h-full overflow-y-auto'>
                 <div
-                  className={cn(
-                    'flex flex-col  ',
-                    currentImages.length > 3 && 'ml-2'
-                  )}
+                  className={cn('flex flex-col', images.length > 3 && 'ml-2')}
                 >
-                  {currentImages?.map((image, index) => (
+                  {images?.map((image, index) => (
                     <div
                       key={index}
                       className={`relative w-[148px] h-[148px] flex-shrink-0 rounded-md overflow-hidden cursor-pointer border`}
@@ -233,7 +145,7 @@ export default function ProductView({
             </div>
 
             {/* Floating product details - visible on larger screens */}
-            <div className='hidden md:block absolute right-6 top-6 w-1/3 max-w-md bg-white/90 backdrop-blur-sm p-6 overflow-y-auto border '>
+            <div className='hidden md:block absolute right-6 top-16 w-1/3 max-w-md bg-white/90 backdrop-blur-sm p-6 overflow-y-auto border'>
               <div className='space-y-6'>
                 {/* Product name and bookmark */}
                 <div className='flex justify-between items-start'>
@@ -249,41 +161,40 @@ export default function ProductView({
                 {/* Price */}
                 <div className='text-xl font-semibold'>
                   {productDetails.currency}
-                  {currentPrice.toFixed(2)}
+                  {productDetails.price.toFixed(2)}
                 </div>
 
-                {/* Description */}
-                {/* <p className='text-gray-600 text-sm'>
-                  {typeof productDetails.description === 'string'
-                    ? productDetails.description
-                    : ''}
-                </p>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: productDetails.description ?? '',
-                  }}
-                /> */}
-
-                {/* Colors - Only show if there are available colors */}
-                {productDetails.availableColors.length > 0 && (
+                {/* Variants - Only show if there are available variants */}
+                {variants && variants.length > 0 && (
                   <div className='space-y-2'>
-                    <h3 className='font-medium text-sm'>Color</h3>
-                    <div className='flex space-x-2'>
-                      {productDetails.availableColors.map((colorOption) => (
-                        <button
-                          key={colorOption.value}
-                          className={`w-6 h-6 rounded-full ${
-                            colorOption.border ? 'border border-gray-300' : ''
-                          } ${
-                            selectedColor === colorOption.value
-                              ? 'ring-2 ring-offset-1 ring-black'
-                              : ''
-                          }`}
-                          style={{ backgroundColor: colorOption.hex }}
-                          aria-label={`Color: ${colorOption.name}`}
-                          title={colorOption.name}
-                          onClick={() => setSelectedColor(colorOption.value)}
-                        />
+                    <h3 className='font-medium text-sm'>Variants</h3>
+                    <div className='grid grid-cols-2 gap-3'>
+                      {variants.map((variant) => (
+                        <a
+                          key={variant.id}
+                          href={`/product/${variant.id}`}
+                          className='flex items-center p-2 border rounded-md hover:bg-gray-50 transition-colors'
+                        >
+                          {variant.images && variant.images[0] && (
+                            <div className='relative w-10 h-10 mr-2'>
+                              <Image
+                                src={variant.images[0].url}
+                                alt={variant.name || 'Variant'}
+                                fill
+                                className='object-cover rounded'
+                              />
+                            </div>
+                          )}
+                          <div className='flex-1'>
+                            <div className='text-xs font-medium'>
+                              {variant.name && variant.name}
+                            </div>
+                            <div className='text-xs text-gray-500'>
+                              {productDetails.currency}
+                              {variant.price.toFixed(2)}
+                            </div>
+                          </div>
+                        </a>
                       ))}
                     </div>
                   </div>
@@ -313,8 +224,8 @@ export default function ProductView({
 
                 {/* Inventory */}
                 <div className='text-xs text-gray-500'>
-                  {currentInventory > 0
-                    ? `${currentInventory} in stock`
+                  {productDetails.inventory > 0
+                    ? `${productDetails.inventory} in stock`
                     : 'Out of stock'}
                 </div>
 
@@ -340,7 +251,7 @@ export default function ProductView({
         </div>
 
         {/* Right column - Product details for mobile */}
-        <div className='space-y-6 md:hidden  mx-4 '>
+        <div className='space-y-6 md:hidden mx-4'>
           {/* Product name and bookmark */}
           <div className='flex justify-between items-start'>
             <h1 className='text-3xl font-bold'>{productDetails.name}</h1>
@@ -355,39 +266,40 @@ export default function ProductView({
           {/* Price */}
           <div className='text-2xl font-semibold'>
             {productDetails.currency}
-            {currentPrice.toFixed(2)}
+            {productDetails.price.toFixed(2)}
           </div>
 
-          {/* Description */}
-          {/* {typeof productDetails.description === 'string' && (
-            <p className='text-gray-600'>{productDetails.description}</p>
-          )}
-          <div
-            dangerouslySetInnerHTML={{
-              __html: productDetails.description ?? '',
-            }}
-          /> */}
-
-          {/* Colors - Only show if there are available colors */}
-          {productDetails.availableColors.length > 0 && (
+          {/* Variants - Only show if there are available variants (mobile view) */}
+          {variants && variants.length > 0 && (
             <div className='space-y-2'>
-              <h3 className='font-medium'>Color</h3>
-              <div className='flex space-x-2'>
-                {productDetails.availableColors.map((colorOption) => (
-                  <button
-                    key={colorOption.value}
-                    className={`w-8 h-8 rounded-full ${
-                      colorOption.border ? 'border border-gray-300' : ''
-                    } ${
-                      selectedColor === colorOption.value
-                        ? 'ring-2 ring-offset-2 ring-black'
-                        : ''
-                    }`}
-                    style={{ backgroundColor: colorOption.hex }}
-                    aria-label={`Color: ${colorOption.name}`}
-                    title={colorOption.name}
-                    onClick={() => setSelectedColor(colorOption.value)}
-                  />
+              <h3 className='font-medium'>Variants</h3>
+              <div className='grid grid-cols-1 gap-3'>
+                {variants.map((variant) => (
+                  <a
+                    key={variant.id}
+                    href={`/product/${variant.id}`}
+                    className='flex items-center p-3 border rounded-md hover:bg-gray-50 transition-colors'
+                  >
+                    {variant.images && variant.images[0] && (
+                      <div className='relative w-12 h-12 mr-3'>
+                        <Image
+                          src={variant.images[0].url}
+                          alt={variant.name || 'Variant'}
+                          fill
+                          className='object-cover rounded'
+                        />
+                      </div>
+                    )}
+                    <div className='flex-1'>
+                      <div className='text-sm font-medium'>
+                        {variant.size && `Size: ${variant.size}`}
+                      </div>
+                      <div className='text-sm text-gray-500'>
+                        {productDetails.currency}
+                        {variant.price.toFixed(2)}
+                      </div>
+                    </div>
+                  </a>
                 ))}
               </div>
             </div>
@@ -417,8 +329,8 @@ export default function ProductView({
 
           {/* Inventory */}
           <div className='text-sm text-gray-500'>
-            {currentInventory > 0
-              ? `${currentInventory} in stock`
+            {productDetails.inventory > 0
+              ? `${productDetails.inventory} in stock`
               : 'Out of stock'}
           </div>
 
@@ -443,3 +355,4 @@ export default function ProductView({
     </div>
   )
 }
+

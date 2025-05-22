@@ -39,7 +39,7 @@ function TabsList({
         <React.Fragment key={index}>
           {child}
           {index < childrenArray.length - 1 && (
-            <div className='w-32 h-[1px] border-t-2 border-dashed border-primary mx-2' />
+            <div className='w-32 h-[1px] border-t-2 border-dashed border-primary ' />
           )}
         </React.Fragment>
       ))}

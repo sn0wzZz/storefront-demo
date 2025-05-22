@@ -2,7 +2,7 @@ import Logo from '../logo'
 import CategoriesWrapper from './categories-wrapper'
 
 import HeaderActions from './header-actions'
-import { getCategories, getStore } from '@/lib/api'
+import { getCategories, getStore } from '@/lib/commerce-api'
 
 export default async function Navigation() {
   // Fetch categories using the server component

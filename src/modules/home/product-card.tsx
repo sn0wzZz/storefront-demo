@@ -58,7 +58,6 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   }, [showSizePanel])
 
-
   const handleAddToCart = () => {
     addItemToCart({
       productId: product.id,
@@ -79,21 +78,26 @@ export function ProductCard({ product }: ProductCardProps) {
 
   // Use a default image if no images are available
   const productImages =
-    product.images && product.images.length > 0
-      ? product.images
-      : ['/home/item.png']
+    product.images && product.images.length > 0 ? product.images : []
 
   return (
     <Card className='overflow-hidden   flex flex-col relative gap-0'>
       <div className='relative bg-muted z-10'>
         <AspectRatio ratio={3 / 3}>
-          <Image
-            src={productImages[currentImageIndex]}
-            alt={product.name}
-            fill
-            className='object-cover transition-all'
-            sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw z-0'
-          />
+          {productImages.length > 0 ? (
+            <Image
+              src={productImages[currentImageIndex]}
+              alt={product.name}
+              fill
+              className='object-cover transition-all'
+              sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw z-0'
+            />
+          ) : (
+            <div className='bg-muted flex-center w-full h-full'>
+              {' '}
+              <p>No image</p>
+            </div>
+          )}
         </AspectRatio>
 
         {/* Bookmark icon */}

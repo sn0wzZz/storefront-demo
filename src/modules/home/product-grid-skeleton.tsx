@@ -7,15 +7,15 @@ export default function ProductGridSkeleton() {
   return (
     <div>
       <Skeleton className='h-8 w-48 mb-6' /> {/* Skeleton for title */}
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0.5'>
         {skeletonItems.map((item) => (
           <div
             key={item}
             className='overflow-hidden h-full flex flex-col relative'
           >
-            <Skeleton className='h-[300px] w-full rounded-t-md' />{' '}
+            <Skeleton className='h-[400px] w-full rounded-t-md' />{' '}
             {/* Product image */}
-            <div className='p-4 space-y-2'>
+            <div className='p-4 space-y-2 flex flex-col  items-center '>
               <Skeleton className='h-5 w-3/4' /> {/* Product name */}
               <Skeleton className='h-6 w-1/3' /> {/* Product price */}
             </div>
