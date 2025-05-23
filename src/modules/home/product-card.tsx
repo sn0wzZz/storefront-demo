@@ -81,8 +81,8 @@ export function ProductCard({ product }: ProductCardProps) {
     product.images && product.images.length > 0 ? product.images : []
 
   return (
-    <Card className='overflow-hidden   flex flex-col relative gap-0'>
-      <div className='relative bg-muted z-10'>
+    <Card className='overflow-hidden   flex flex-col relative gap-0 border '>
+      <div className='relative  z-10'>
         <AspectRatio ratio={3 / 3}>
           {productImages.length > 0 ? (
             <Image

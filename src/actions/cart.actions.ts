@@ -12,6 +12,7 @@ import {
   removeProductsFromCart as apiRemoveProductsFromCart,
   updateCartItem as apiUpdateCartItem,
   createOrder as apiCreateOrder,
+  getCart,
 } from '../lib/cart-api'
 import { getCartIdFromCookie, setCartIdCookie } from '../lib/cookie-utils'
 
@@ -28,9 +29,12 @@ export async function getOrCreateCart(): Promise<{
 
     if (existingCartId) {
       console.log('Using existing cart ID from cookie:', existingCartId)
+
+      const cart = await getCart(existingCartId)
+      console.log(cart)
       return {
         cartId: existingCartId,
-        cart: { id: existingCartId, status: 'open' } as Cart,
+        cart: cart,
       }
     }
 
@@ -94,7 +98,7 @@ export async function addProductsToCart(
  * Removes products from a cart
  */
 export async function removeProductsFromCart(
-  productIds: string[]
+  productIds: (string|undefined)[]
 ): Promise<Cart> {
   try {
     const cartId = await getCartIdFromCookie()

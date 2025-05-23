@@ -44,7 +44,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const categoryData = category?.data.commerceCategoriesLocalizations?.[0]
 
   return (
-    <div className='container mx-auto py-12'>
+    <div className='container mx-auto py-20'>
       <div className='mb-10'>
         <h1 className='text-4xl font-bold mb-4 capitalize'>
           {categoryData.name}

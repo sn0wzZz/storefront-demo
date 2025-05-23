@@ -1,10 +1,11 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 
 export default function Logo() {
   return (
     <Link href={'/'}>
-      <span className='body-20-semibold'>MILMOUNE</span>
+      <Image src={'/logo.svg'} alt='logo' width={135} height={100} />
     </Link>
   )
 }

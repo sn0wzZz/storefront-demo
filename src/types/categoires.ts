@@ -69,12 +69,23 @@ export interface Category extends BaseEntity {
   commerceCategoriesLocalizations: CategoryTranslation[]
 }
 
-// API response type
+// Meta information for pagination
+export interface MetaData {
+  total: number
+  page: number
+  pageSize: number
+}
+
+// Updated API response types to match the nested structure
 export interface CategoriesResponse {
   success: boolean
-  data: CategoryTranslation[]
+  data: {
+    data: CategoryTranslation[]
+    meta: MetaData
+  }
   error: string | null
 }
+
 export interface CategoryResponse {
   success: boolean
   data: Category

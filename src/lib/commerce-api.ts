@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios'
 import { CategoriesResponse, CategoryResponse } from '@/types/categoires'
 import { filterGroupProducts, GroupProductItem, Product, ProductGroupResponse, ProductResponse, ProductsResponse } from '@/types/product'
 import { StoreResponse, StoresResponse } from '@/types/store'
+import { processProductsWithGroups } from './helpers/process-groupe-items'
 
 const apiClient = axios.create({
   headers: {
@@ -130,7 +131,7 @@ export async function getCategories(): Promise<CategoriesResponse> {
     console.error('Error in getCategories:', error)
     return {
       success: false,
-      data: [],
+      data: {data: [], meta: { total: 0, page: 1, pageSize: 10 }},
       error: error instanceof Error ? error.message : 'Unknown error',
     }
   }
@@ -159,70 +160,12 @@ export async function getProducts(): Promise<Product[]> {
       return []
     }
 
-    // Filter out products that are part of a group but are not main products
-    const filteredProducts = response.data.filter(product => {
-      // If the product is not part of a group, include it
-      if (!product.commerceProductToGroups || product.commerceProductToGroups.length === 0) {
-        return true;
-      }
-      
-      // If the product is part of a group, check if it's the main product
-      // We assume at least one of the group relationships has isMain=true
-      return product.commerceProductToGroups.some(group => group.isMain === true);
-    });
-
-    // For each main product that is part of a group, fetch its variants
-    const productsWithVariants = await Promise.all(
-      filteredProducts.map(async (product) => {
-        // If product is part of a group and is the main product
-        if (product.commerceProductToGroups && 
-            product.commerceProductToGroups.length > 0 && 
-            product.commerceProductToGroups.some(group => group.isMain)) {
-          
-          const groupId = product.commerceProductToGroups[0].groupId;
-          
-          try {
-            // Fetch group items
-            const groupResponse = await getProductGroupItems(groupId);
-            
-            // If we have group items, find the first non-main product to use as the target
-            if (groupResponse && groupResponse.length > 0) {
-              // Find the first non-main product in the group
-              const firstVariant = groupResponse.find(item => !item.isMain);
-              
-              if (firstVariant) {
-                // Return the main product with the first variant's ID for linking
-                return {
-                  ...product,
-                  groupItems: groupResponse,
-                  targetProductId: firstVariant.productId // This will be used for the link
-                };
-              }
-            }
-            
-            // Return product with group items but no target ID if no variants found
-            return {
-              ...product,
-              groupItems: groupResponse
-            };
-          } catch (error) {
-            console.error(`Error fetching group items for product ${product.id}:`, error);
-            return product;
-          }
-        }
-        
-        // Return product as is if not part of a group or not the main product
-        return product;
-      })
-    );
-
-    return productsWithVariants;
+    return await processProductsWithGroups(response.data)
   } catch (error) {
     console.error('Error in getProducts:', error)
     return []
   }
 }
-
 
 
 
@@ -243,7 +186,7 @@ export async function getProductById(productId: string) {
 
 
 /**
- * Get products by category
+ * Get products by category with processed group information
  */
 export async function getProductsByCategory(
   categoryId: string
@@ -252,7 +195,17 @@ export async function getProductsByCategory(
     const response = await fetchApi<ProductsResponse>(
       `/catalog?category=${categoryId}`
     )
-    return response
+    
+    if (response.success && response.data) {
+      // Process the products while maintaining the ProductsResponse structure
+      const processedProducts = await processProductsWithGroups(response.data);
+      return {
+        ...response,
+        data: processedProducts
+      };
+    }
+    
+    return response;
   } catch (error) {
     console.error(`Error in getProductsByCategory for ${categoryId}:`, error)
     return {
@@ -262,6 +215,7 @@ export async function getProductsByCategory(
     }
   }
 }
+
 
 /**
  * Get featured products

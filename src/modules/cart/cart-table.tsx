@@ -3,7 +3,7 @@
 import { useCart } from '@/providers/cart.provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Trash2, Bookmark, Minus, Plus } from 'lucide-react'
+import { Trash2, Bookmark, Minus, Plus, Trash } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 import {
@@ -16,33 +16,44 @@ import {
 import Link from 'next/link'
 
 export default function CartTable() {
-  const { cart, removeItemFromCart, updateItemQuantity } = useCart()
+  const { cart, removeItemFromCart, updateItemQuantity, clearCart } = useCart()
   console.log('🛒 Cart items:',cart?.items)
+
+  const productIds= cart?.items.map(item=> item.id)
 
   if (!cart || cart.items.length === 0) {
     return (
       <div className='flex flex-col items-center justify-center py-12'>
         <h3 className='text-lg font-medium text-gray-900 dark:text-gray-100'>
-          Your cart is empty
+          Твоята количка e празна
         </h3>
         <p className='mt-2 text-sm text-gray-500 dark:text-gray-400'>
-          Add items to your cart to see them here.
+          Добави продукти в количката и те ще бъдат показани тук.
         </p>
       </div>
     )
   }
 
   return (
-    <div className='space-y-5'>
-      {cart.items.map((item) => (
-        <CartItem
-          key={item.id}
-          item={item}
-          onRemove={removeItemFromCart}
-          onUpdateQuantity={updateItemQuantity}
-        />
-      ))}
-    </div>
+    <>
+      <div className='flex items-center justify-between p-4 border-b h-16'>
+        <span className='body-20-medium'>Твоята количка</span>
+        <Button variant={'ghost'} onClick={() => clearCart()}>
+          <Trash className='h-4 w-4 mr-2' />
+          премахни всички
+        </Button>
+      </div>
+      <div className='space-y-5'>
+        {cart.items.map((item) => (
+          <CartItem
+            key={item.id}
+            item={item}
+            onRemove={removeItemFromCart}
+            onUpdateQuantity={updateItemQuantity}
+          />
+        ))}
+      </div>
+    </>
   )
 }
 
@@ -139,7 +150,7 @@ function CartItem({ item, onRemove, onUpdateQuantity }: CartItemProps) {
 
       {/* Product Size Dropdown - Column 3 */}
       <div className='order-3 md:col-span-2 space-y-2 md:order-none '>
-        <p>Product size</p>
+        <p>Размер</p>
         <Select value={size} onValueChange={handleSizeChange}>
           <SelectTrigger className='w-[120px] bg-transparent'>
             <SelectValue placeholder='Select size' />
@@ -156,7 +167,7 @@ function CartItem({ item, onRemove, onUpdateQuantity }: CartItemProps) {
 
       {/* Quantity - Column 4 */}
       <div className=' order-4 md:col-span-2 space-y-2 md:order-none '>
-        <p>Quantity</p>
+        <p>Количество</p>
         <div className='flex items-center'>
           <Button
             variant='outline'

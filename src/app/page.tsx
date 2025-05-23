@@ -1,4 +1,5 @@
 import { getProductGroupItems, getProducts } from '@/lib/commerce-api'
+import Hero from '@/modules/home/hero'
 import ProductGridSkeleton from '@/modules/home/product-grid-skeleton'
 import ProductList from '@/modules/home/product-list'
 import { Suspense } from 'react'
@@ -42,7 +43,8 @@ async function SuspendedProductList() {
 
 export default function Home() {
   return (
-    <div className='container py-20 mx-auto'>
+    <div className='py-16 mx-auto space-y-10'>
+      <Hero />
       <SuspendedProductList />
     </div>
   )

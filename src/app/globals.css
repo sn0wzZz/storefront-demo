@@ -340,9 +340,8 @@
 
 /* Display */
 @utility display-main {
-  @apply text-[48px] leading-[56px] tracking-[-0.5px] font-bold 
-  md:text-[60px] md:leading-[72px] md:tracking-[-0.75px] 
-  lg:text-[72px] lg:leading-[84px] lg:tracking-[-1px];
+  @apply text-[48px] leading-[56px] tracking-[-0.5px] font-medium 
+  md:text-[64px] md:leading-[72px] md:tracking-[-5%];
 }
 
 @utility display-sub {

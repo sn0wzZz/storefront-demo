@@ -140,7 +140,7 @@ export async function addProductsToCart(
  */
 export async function removeProductsFromCart(
   cartId: string,
-  productIds: string[]
+  productIds: (string | undefined)[]
 ): Promise<Cart> {
   try {
     const response = await api.delete<Cart>(`${BASE_URL}/${cartId}/items`, {

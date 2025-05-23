@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
 import { CategoriesResponse } from '@/types/categoires'
@@ -13,10 +13,22 @@ export default function Categories({
 }) {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
 
+  useEffect(() => {
+    console.log('Categories component received:', categories)
+  }, [categories])
+
+  // Check if categories data exists and the request was successful
+  if (!categories?.success || !categories?.data?.data) {
+    console.log('No categories data available or request failed')
+    return null // Return early if no data or request failed
+  }
+
   // Filter categories by locale
-  const filteredCategories = categories?.data?.filter(
+  const filteredCategories = categories.data.data.filter(
     (cat) => cat.commerceLanguage.code === locale
   )
+
+  console.log('Filtered categories for locale', locale, ':', filteredCategories)
 
   // Find the "clothes" category ID
   const clothesCategoryId = filteredCategories.find(
@@ -24,16 +36,27 @@ export default function Categories({
       cat.name.toLowerCase() === 'clothes' || cat.name.toLowerCase() === 'дрехи'
   )?.commerceCategory.id
 
-  // Get direct children of the clothes category (male, female)
-  const mainCategories = filteredCategories.filter(
-    (cat) => cat.commerceCategory.parentId === clothesCategoryId
-  )
+  console.log('Clothes category ID:', clothesCategoryId)
+
+  // If no clothes category is found, show all top-level categories
+  const mainCategories = clothesCategoryId
+    ? filteredCategories.filter(
+        (cat) => cat.commerceCategory.parentId === clothesCategoryId
+      )
+    : filteredCategories.filter((cat) => cat.commerceCategory.parentId === null)
+
+  console.log('Main categories:', mainCategories)
 
   // Get subcategories for a given category
   const getSubcategories = (categoryId: string) => {
     return filteredCategories.filter(
       (cat) => cat.commerceCategory.parentId === categoryId
     )
+  }
+
+  if (mainCategories.length === 0) {
+    console.log('No main categories found')
+    return null
   }
 
   return (

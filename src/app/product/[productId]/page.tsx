@@ -1,3 +1,4 @@
+import MoreProducts from '@/components/more-products'
 import { getProductById, getProductGroupItems } from '@/lib/commerce-api'
 import ProductView from '@/modules/product-view'
 import { ProductVariantDisplay } from '@/types/product'
@@ -170,6 +171,7 @@ export default async function ProductPage({
         productDetails={productDetails}
         variants={variants}
       />
+      <MoreProducts />
     </div>
   )
 }
