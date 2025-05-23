@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import Image from 'next/image'
-import { Bookmark, Eye, Package2, Plus } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import ProductAccordion from '@/components/dropdown-box'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { useCart } from '@/providers/cart.provider'
 import { ProductVariantDisplay } from '@/types/product'
-import ProductAccordion from '@/components/dropdown-box'
+import { Bookmark, Eye, Plus } from 'lucide-react'
+import Image from 'next/image'
+import { useState } from 'react'
 
 interface MediaFile {
   url: string

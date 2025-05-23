@@ -25,16 +25,14 @@ const AccordionItem = ({
       >
         <span>{title}</span>
         <div className='w-10  h-full flex-center'>
-        <div className='p-2.5 border'>
-
-        {isOpen?<Minus
-          className='h-5 w-5  '
-          />:
-        <Plus
-          className='h-5 w-5  '
-          />}
+          <div className='p-2.5 border'>
+            {isOpen ? (
+              <Minus className='h-5 w-5  ' />
+            ) : (
+              <Plus className='h-5 w-5  ' />
+            )}
           </div>
-          </div>
+        </div>
       </button>
       <div
         className={`overflow-hidden transition-all duration-300 ease-in-out ${
@@ -75,7 +73,7 @@ export default function ProductAccordion() {
           Every detail of this varsity jacket is thoughtfully designed for
           durability and style. The ribbed cuffs, are finely stitched for a snug
           fit, while reinforced seams ensure long-lasting wear even in everyday
-          use. Whether you're looking for a classic street style piece or a
+          use. Whether you$apos;re looking for a classic street style piece or a
           versatile casual jacket.
         </p>
       </AccordionItem>
@@ -106,7 +104,7 @@ export default function ProductAccordion() {
         </p>
         <p>
           You can return items via mail or in-store. To process a return, log
-          into your MY Store account and select "Return this Item" from the
+          into your MY Store account and select &quot;Return this Item&quot; from the
           order details, or use the link in your delivery confirmation email.
           You may also contact Customer Support for help. Once the request is
           approved, a prepaid shipping label will be emailed to you or made
@@ -126,7 +124,7 @@ export default function ProductAccordion() {
           Additional information is available during the checkout process or in
           the FAQs section.
         </p>
-   
+
         <div className='overflow-x-auto mt-10 border'>
           <table className='min-w-full divide-y divide-gray-200'>
             <thead>

@@ -19,8 +19,6 @@ export default function CartTable() {
   const { cart, removeItemFromCart, updateItemQuantity, clearCart } = useCart()
   console.log('🛒 Cart items:',cart?.items)
 
-  const productIds= cart?.items.map(item=> item.id)
-
   if (!cart || cart.items.length === 0) {
     return (
       <div className='flex flex-col items-center justify-center py-12'>
